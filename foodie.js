@@ -169,28 +169,28 @@ const CRecommendationIntentHandler = { // once the system knows your delivery op
     let speechText = "";
 
     // TODO: split this into different completed handlers
-    if (slotValues.deliveryOption.statusCode === "ER_SUCCESS_MATCH") {
+    if (slotValues.deliveryOption.statusCode === "ER_SUCCESS_MATCH") { // if the slots are correctly resolved then this happens: 
       
-      if (slotValues.deliveryOption.resolvedValues[0] !== "make") {
-        const address = sessionAttributes.profile.location.address;
-        if (address.zip || address.city && address.state) {
+      if (slotValues.deliveryOption.resolvedValues[0] !== "make") { // if the delivery option does not resolve to cooking at home then suggest the restaurants
+        const address = sessionAttributes.profile.location.address; // define address to recommend restaurants close by
+        if (address.zip || address.city && address.state) { // if you have the zip or the city and state address do this
           // TODO: look up where the restaurants would be
-          console.log("look up the restaurants");
-          speechText = "There's 2 restaurants close by korean bamboo and One pot. Which would you like?";
+          console.log("look up the restaurants"); // logging what the program is doing, in this case, looking up restaurants
+          speechText = "There's 2 restaurants close by korean bamboo and One pot. Which would you like?"; // offers the restaurant options
 
         } else {
-          console.log("We need to elicit for address");
-          speechText = "To find a restaurant close by I need to know your address. What city do you live in?";
+          console.log("We need to elicit for address"); // logging what the program is doing, in this case, eliciting the address
+          speechText = "To find a restaurant close by I need to know your address. What city do you live in?"; // asking for the address
         }
       } else {
         // TODO prompt for portion
-        speechText = "Which would you like a small, medium, or large portion size?";
+        speechText = "Which would you like a small, medium, or large portion size?"; // asking for portion size
       }
     } else {
         // TODO: validate input for options - if we don't know ER_SUCCESS_NO_MATCH ask again
-        speechText = "Which would you like? to eat out, order delivery, or cook";
-        return handlerInput.responseBuilder
-          .addElicitSlotDirective("deliveryOption")
+        speechText = "Which would you like? to eat out, order delivery, or cook"; // reprompt if one of the required slots is not filled 
+        return handlerInput.responseBuilder // constructing the response using the following features
+          .addElicitSlotDirective("deliveryOption") // not sure why it doesn't include all the slots that are being elicited but only the deliveryOption
           .speak(speechText)
           .reprompt(speechText)
           .getResponse();
@@ -203,6 +203,7 @@ const CRecommendationIntentHandler = { // once the system knows your delivery op
   },
 };
 
+// Not sure why this was included and then commented out since getting a meal seems to be covered in the recommendationIntent
 // TODO: remove this
 // const GetMealIntentHandler = {
 //   canHandle(handlerInput) {
@@ -216,7 +217,7 @@ const CRecommendationIntentHandler = { // once the system knows your delivery op
 //   }
 // };
 
-// TODO: remove this
+// TODO: remove this --> why should this be removed? 
 const LookupRestaurantIntentHandler = {
   canHandle(handlerInput) {
     return handlerInput.requestEnvelope.request.type === "IntentRequest"
@@ -224,37 +225,37 @@ const LookupRestaurantIntentHandler = {
   },
   handle(handlerInput) {
     return handlerInput.responseBuilder
-      .speak("I've sent Korean Bamboo's address to the Alexa App. Bon apetit!")
+      .speak("I've sent Korean Bamboo's address to the Alexa App. Bon apetit!") // this didn't actually send anything to the app, it just says it did
       .getResponse();
   }
 };
 
-const InProgressCaptureAddressIntentHandler = {
+const InProgressCaptureAddressIntentHandler = { // if the user provides their address, this handler is activated
   canHandle(handlerInput) {
     return handlerInput.requestEnvelope.request.type === "IntentRequest"
-      && handlerInput.requestEnvelope.request.intent.name === "CaptureAddressIntent"
-      && handlerInput.requestEnvelope.request.dialogState !== "COMPLETED";
+      && handlerInput.requestEnvelope.request.intent.name === "CaptureAddressIntent" // although it's a separate handler, it's part of capturing the address
+      && handlerInput.requestEnvelope.request.dialogState !== "COMPLETED"; // distinction between inProgress and completed. This is all still in progress
   },
   handle(handlerInput) {
     return handlerInput.responseBuilder
-      .addDelegateDirective()
+      .addDelegateDirective() // ensures that this slot is filled
       .getResponse();
   }
 };
 
-const InProgressHasZipCaptureAddressIntentHandler = {
+const InProgressHasZipCaptureAddressIntentHandler = { // if the user just provides their zip code this handler is activated
   canHandle(handlerInput) {
     const currentIntent = handlerInput.requestEnvelope.request.intent;
     return handlerInput.requestEnvelope.request.type === "IntentRequest"
       && currentIntent.name === "CaptureAddressIntent"
-      && intentSlotsHaveBeenFilled(currentIntent, ["zip"])
+      && intentSlotsHaveBeenFilled(currentIntent, ["zip"]) // this line separates it from the other address intents
       && handlerInput.requestEnvelope.request.dialogState !== "COMPLETED";
   },
   handle(handlerInput) {
     const currentIntent = handlerInput.requestEnvelope.request.intent;
     const slotValues = getSlotValues(currentIntent.slots);
-    let speechText = "There's 2 restaurants close to " + slotValues.zip.synonym; 
-    speechText +=  " Korean Bamboo and One pot. Which would you like?";
+    let speechText = "There's 2 restaurants close to " + slotValues.zip.synonym; // constructs the answer with slot values close to that zip. Not sure though where the actual geolocation happens, probably in one of the helper functions further down. 
+    speechText +=  " Korean Bamboo and One pot. Which would you like?"; // this hardcodes answers instead of using geolocation
     return handlerInput.responseBuilder
       .speak(speechText)
       .reprompt(speechText)
@@ -267,13 +268,13 @@ const InProgressHasCityStateCaptureAddressIntentHandler = {
     const currentIntent = handlerInput.requestEnvelope.request.intent;
     return handlerInput.requestEnvelope.request.type === "IntentRequest"
       && currentIntent.name === "CaptureAddressIntent"
-      && intentSlotsHaveBeenFilled(currentIntent, ["city", "state"])
+      && intentSlotsHaveBeenFilled(currentIntent, ["city", "state"]) // this separates the city address handler from the others
       && handlerInput.requestEnvelope.request.dialogState !== "COMPLETED";
   },
   handle(handlerInput) {
     const currentIntent = handlerInput.requestEnvelope.request.intent;
     const slotValues = getSlotValues(currentIntent.slots);
-    let speechText = "There's 2 restaurants close to " + slotValues.city.synonym
+    let speechText = "There's 2 restaurants close to " + slotValues.city.synonym // not sure what the synonym value is about here
       + ", " 
       + slotValues.state.synonym
       + " Korean Bamboo and One pot. Which would you like?";
@@ -285,19 +286,19 @@ const InProgressHasCityStateCaptureAddressIntentHandler = {
 };
 
 
-const HelpIntentHandler = {
+const HelpIntentHandler = { // if the user asks for help this is what will be played back
   canHandle(handlerInput) {
     return handlerInput.requestEnvelope.request.type === 'IntentRequest'
       && handlerInput.requestEnvelope.request.intent.name === 'AMAZON.HelpIntent';
   },
   handle(handlerInput) {
-    const speechText = 'This is the foodie. I will find the best meal and restaurant recommendations for you. To get started say I\'m hungry';
+    const speechText = 'This is the foodie. I will find the best meal and restaurant recommendations for you. To get started say I\'m hungry'; // provides an explanation and a next action
 
     return handlerInput.responseBuilder
       .speak(speechText)
       .reprompt(speechText)
-      .withSimpleCard('The Foodie', speechText)
-      .getResponse();
+      .withSimpleCard('The Foodie', speechText) // shows The Foodie logo on an Alexa device that has a screen
+      .getResponse(); // listens for what the user wants to do next
   },
 };
 
@@ -308,7 +309,7 @@ const CancelAndStopIntentHandler = {
         || handlerInput.requestEnvelope.request.intent.name === 'AMAZON.StopIntent');
   },
   handle(handlerInput) {
-    const speechText = 'Goodbye!';
+    const speechText = 'Goodbye!'; // once the user interrupts the skill to close it this will be played
 
     return handlerInput.responseBuilder
       .speak(speechText)
@@ -317,27 +318,27 @@ const CancelAndStopIntentHandler = {
   },
 };
 
-const SessionEndedRequestHandler = {
+const SessionEndedRequestHandler = { // this handler tells us why a session ended: it finished regularly, the user finished it or some error closed it
   canHandle(handlerInput) {
-    return handlerInput.requestEnvelope.request.type === 'SessionEndedRequest';
+    return handlerInput.requestEnvelope.request.type === 'SessionEndedRequest'; // generic, part of every custom skill
   },
   handle(handlerInput) {
-    console.log(`Session ended with reason: ${handlerInput.requestEnvelope.request.reason}`);
+    console.log(`Session ended with reason: ${handlerInput.requestEnvelope.request.reason}`); // logs the reason the session ended to CloudWatch
 
     return handlerInput.responseBuilder.getResponse();
   },
 };
 
-const ErrorHandler = {
+const ErrorHandler = { // this is activated when there's an error
   canHandle() {
-    return true;
+    return true; // different "anatomy" to other handlers. This is probably some shortcut defined in the Alexa API. 
   },
   handle(handlerInput, error) {
-    console.log(`Error handled: ${error.message}`);
+    console.log(`Error handled: ${error.message}`); // logs the error message
     console.log(error.stack);
 
     return handlerInput.responseBuilder
-      .speak('Sorry, I can\'t understand the command. Please say again.')
+      .speak('Sorry, I can\'t understand the command. Please say again.') // error message played to user, can be customized
       .reprompt('Sorry, I can\'t understand the command. Please say again.')
       .getResponse();
   },
@@ -347,89 +348,89 @@ const ErrorHandler = {
 
 // This interceptor loads our profile from persistent storage into the session
 // attributes.
-const NewSessionRequestInterceptor = {
-  async process(handlerInput) {
-    console.log('request:', JSON.stringify(handlerInput.requestEnvelope.request));
+const NewSessionRequestInterceptor = { // loads info such as location into session attributes
+  async process(handlerInput) { // starts the process of looking up if a profile exists or not
+    console.log('request:', JSON.stringify(handlerInput.requestEnvelope.request)); // logging where the system is at
 
-    if (handlerInput.requestEnvelope.session.new) {
+    if (handlerInput.requestEnvelope.session.new) { //this is triggered if the user never used the skill before (long enough to save data) 
       const attributesManager = handlerInput.attributesManager;
       let sessionAttributes = attributesManager.getSessionAttributes();
 
-      const persistentAttributes = await attributesManager.getPersistentAttributes();
+      const persistentAttributes = await attributesManager.getPersistentAttributes(); // persistentAttributes are delivered from the attributesManager and the system waits for them
 
-      console.log('persistentAttributes:', JSON.stringify(persistentAttributes));
+      console.log('persistentAttributes:', JSON.stringify(persistentAttributes)); // logging what attributes exist in the database
 
-      if (!persistentAttributes.profile) {
+      if (!persistentAttributes.profile) { // if no profile exists
         console.log('Initializing new profile...');
-        sessionAttributes.isNew = true;
-        sessionAttributes.profile = initializeProfile();
-        sessionAttributes.recommendations = initializeRecommendations();
+        sessionAttributes.isNew = true; // validating that profile is new
+        sessionAttributes.profile = initializeProfile(); //setting up new profile
+        sessionAttributes.recommendations = initializeRecommendations(); // sets up the info to save the recommendations that will be given later
       } else {
-        console.log('Restoring profile from persistent store.');
-        sessionAttributes.isNew = false;
-        sessionAttributes = persistentAttributes;
+        console.log('Restoring profile from persistent store.'); // this kicks in if the user already has persistent data stored from a previous session
+        sessionAttributes.isNew = false; // the profile is not new
+        sessionAttributes = persistentAttributes; // session attributes are saved to persistent attributes
       }
       
-      console.log("set sessionAttributes to:",JSON.stringify(sessionAttributes));
-      attributesManager.setSessionAttributes(sessionAttributes);
+      console.log("set sessionAttributes to:",JSON.stringify(sessionAttributes)); // gives us an output of what attributes were established and then saved
+      attributesManager.setSessionAttributes(sessionAttributes); // saves session attributes in attributesManager
     }
   }
 };
 
-const SetTimeOfDayInterceptor = {
+const SetTimeOfDayInterceptor = { // figures out if the user wants brunch, lunch, dinner or some snack based on time of day
   async process(handlerInput) {
 
-    const { requestEnvelope, serviceClientFactory, attributesManager } = handlerInput;
-    const sessionAttributes = attributesManager.getSessionAttributes();
+    const { requestEnvelope, serviceClientFactory, attributesManager } = handlerInput; // serviceClientFactory Constructs service clients capable of calling Alexa APIs. This tells us exactly what is in the handlerInput: requestEnvelope, attributesManager and serviceClientFactory
+    const sessionAttributes = attributesManager.getSessionAttributes(); //defines where to find sessionAttributes
 
     // look up the time of day if we don't know it already.
-    if (!sessionAttributes.timeOfDay) {
-      const deviceId = requestEnvelope.context.System.device.deviceId;
+    if (!sessionAttributes.timeOfDay) { // if sessionAttributes don't have any info about the time of day then do this
+      const deviceId = requestEnvelope.context.System.device.deviceId; // presumably the device Id is registered to a particular location, which in turn let's us know the time where the user is
 
-      const upsServiceClient = serviceClientFactory.getUpsServiceClient();
-      const timezone = await upsServiceClient.getSystemTimeZone(deviceId);    
+      const upsServiceClient = serviceClientFactory.getUpsServiceClient(); // 
+      const timezone = await upsServiceClient.getSystemTimeZone(deviceId); // timezone depends on location of device   
 
-      const currentTime = getCurrentTime(timezone);
-      const timeOfDay = getTimeOfDay(currentTime);
+      const currentTime = getCurrentTime(timezone); // captures current time in timezone
+      const timeOfDay = getTimeOfDay(currentTime); // time of day is a value such as lunch or dinner
 
-      sessionAttributes.timeOfDay = timeOfDay;
-      sessionAttributes.profile.location.timezone = timezone;
+      sessionAttributes.timeOfDay = timeOfDay; // defines whether lunch or dinner is captured in the session attributes
+      sessionAttributes.profile.location.timezone = timezone; // captures time zone since this doesn't have to be established every time 
       attributesManager.setSessionAttributes(sessionAttributes);
       
-      console.log("SetTimeOfDayInterceptor - currentTime:", currentTime);
-      console.log("SetTimeOfDayInterceptor - timezone:", timezone);
-      console.log('SetTimeOfDayInterceptor - time of day:', timeOfDay);
-      console.log('SetTimeOfDayInterceptor - sessionAttributes', JSON.stringify(sessionAttributes));
+      console.log("SetTimeOfDayInterceptor - currentTime:", currentTime); // logs time in device location
+      console.log("SetTimeOfDayInterceptor - timezone:", timezone); // logs timezone
+      console.log('SetTimeOfDayInterceptor - time of day:', timeOfDay); // logs whether it's lunch or dinner time
+      console.log('SetTimeOfDayInterceptor - sessionAttributes', JSON.stringify(sessionAttributes)); //logs the results of the time lookup
     }
   }
 };
 
-const HasConsentTokenRequestInterceptor = {
+const HasConsentTokenRequestInterceptor = { // did the user provide consent and therefore send over a token? 
   async process(handlerInput) {
-    const { requestEnvelope, serviceClientFactory, attributesManager } = handlerInput;
+    const { requestEnvelope, serviceClientFactory, attributesManager } = handlerInput; // defines what is in the handlerInput
     const sessionAttributes = attributesManager.getSessionAttributes();
 
-    if (handlerInput.requestEnvelope.context.System.user.permissions
-        && handlerInput.requestEnvelope.context.System.user.permissions.consentToken
-        && (!sessionAttributes.profile.location.address.city
-        || !sessionAttributes.profile.location.address.state
-        || !sessionAttributes.profile.location.address.zip)) {
+    if (handlerInput.requestEnvelope.context.System.user.permissions //did the user provide permission? 
+        && handlerInput.requestEnvelope.context.System.user.permissions.consentToken // is there a valid permission token? 
+        && (!sessionAttributes.profile.location.address.city // is the system unaware of the city
+        || !sessionAttributes.profile.location.address.state // is the system unaware of the state
+        || !sessionAttributes.profile.location.address.zip)) { // is the system unaware of the zip
 
-      const { deviceId } = requestEnvelope.context.System.device;
-      const deviceAddressServiceClient = serviceClientFactory.getDeviceAddressServiceClient();
-      const address = await deviceAddressServiceClient.getFullAddress(deviceId);
+      const { deviceId } = requestEnvelope.context.System.device; // device Id is saved as an object which means several kinds of info can be stored about the device (not just an id)
+      const deviceAddressServiceClient = serviceClientFactory.getDeviceAddressServiceClient(); // the service client factory contains the device info
+      const address = await deviceAddressServiceClient.getFullAddress(deviceId); // waits until the full device address is provided
         
-      console.log(JSON.stringify(address));
+      console.log(JSON.stringify(address)); // logs what address was saved
   
-      if (address.postalCode) {
-        sessionAttributes.profile.location.address.zip = address.postalCode;
-      } else if (address.city && address.stateOrRegion) {
+      if (address.postalCode) { 
+        sessionAttributes.profile.location.address.zip = address.postalCode; // sets zip equal to postal code, the word that may be contained in the service client factory
+      } else if (address.city && address.stateOrRegion) { // the system is also okay if it just receives the city and state or region without a zip
         sessionAttributes.profile.location.address.city = address.city;
         sessionAttributes.profile.location.address.state = address.stateOrRegion;
       }
 
-      attributesManager.setSessionAttributes(sessionAttributes);
-      console.log('HasConsentTokenRequestInterceptor - sessionAttributes', JSON.stringify(sessionAttributes)); 
+      attributesManager.setSessionAttributes(sessionAttributes); // writes this info to the database
+      console.log('HasConsentTokenRequestInterceptor - sessionAttributes', JSON.stringify(sessionAttributes)); // logs whether consent was given or not 
     }
   }
 };
@@ -920,31 +921,34 @@ exports.handler = skillBuilder
     CancelAndStopIntentHandler,
     SessionEndedRequestHandler
   )
-  .addRequestInterceptors(
-    NewSessionRequestInterceptor,
-    SetTimeOfDayInterceptor,
-    HasConsentTokenRequestInterceptor,
-    RecommendationIntentStartedRequestInterceptor,
+  .addRequestInterceptors( // request interceptors need to be registered just like handlers as well
+    NewSessionRequestInterceptor, // determines if the user has a profile or not
+    SetTimeOfDayInterceptor, // determines the time of day based on device location
+    HasConsentTokenRequestInterceptor, // determines whether the user has given permission to link account and provide device location
+    RecommendationIntentStartedRequestInterceptor, // 
     RecommendationIntentCaptureSlotToProfileInterceptor,
     CaptureAddressIntentCaptureSlotsToProfileInterceptor,
     DialogManagementStateInterceptor
   )
-  .addResponseInterceptors(SessionWillEndInterceptor)
-  .addErrorHandlers(ErrorHandler)
+  .addResponseInterceptors(SessionWillEndInterceptor) // make sure to not confuse request and response interceptors
+  .addErrorHandlers(ErrorHandler) // not sure why the error handler is not just registered above with all the other handlers
   //.withPersistenceAdapter()
   //.withApiClient(new Alexa.DefaultApiClient())
-  .withAutoCreateTable(true)
-  .withTableName("theFoodie")
-  .lambda();
+  .withAutoCreateTable(true) // will create a new DynamoDB table if it doesn't already exist
+  .withTableName("theFoodie") // name of DynamodB table
+  .lambda(); // uses the AWS lambda service
 
-// continue on line 170
+// continue on line 438
 
   //   Questions: 
-//   What is in the request envelope? 
+//   What is in the request envelope? Contains the incoming Request and other context.
 //   What does the SIPRecommendationIntentHandler do exactly?   
 //   what is currentIntent is needed for?
 //   not sure why the object called responseBuilder is set equal to the handler output 
 //   no idea what a disambiguateSlot is. Based on the function below it indicates perhaps when slots are not filled yet?
+//   .addElicitSlotDirective("deliveryOption") // not sure why it doesn't include all the slots that are being elicited but only the deliveryOption
+//   What's the difference between an error message and an error stack? 
+//   What is the difference between a response and a request interceptor? 
 
 
 
