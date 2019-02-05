@@ -435,145 +435,119 @@ const HasConsentTokenRequestInterceptor = { // did the user provide consent and 
   }
 };
 
-// This interceptor initializes our slots with the values from the user profile.
-const RecommendationIntentStartedRequestInterceptor = {
-  process(handlerInput) {
-    if (handlerInput.requestEnvelope.request.type === 'IntentRequest'
-      && handlerInput.requestEnvelope.request.intent.name === 'RecommendationIntent'
-      && handlerInput.requestEnvelope.request.dialogState === "STARTED") {
-        console.log("recommendationIntentStartedRequestInterceptor:", "Initialize the session attributes for the intent.");
+
+const RecommendationIntentStartedRequestInterceptor = { // This interceptor initializes our slots with the values from the user profile.
+  process(handlerInput) { //what does the process keyword do? 
+    if (handlerInput.requestEnvelope.request.type === 'IntentRequest' //condition 1: It's an intent request
+      && handlerInput.requestEnvelope.request.intent.name === 'RecommendationIntent' //condition 2: the name of the intent is RecommendationIntent
+      && handlerInput.requestEnvelope.request.dialogState === "STARTED") { // condition 3: it has just started up
+        console.log("recommendationIntentStartedRequestInterceptor:", "Initialize the session attributes for the intent."); // logging what the program is doing
 
         const attributesManager = handlerInput.attributesManager;
         const sessionAttributes = attributesManager.getSessionAttributes();
-        const profile = sessionAttributes.profile;
+        const profile = sessionAttributes.profile; // define the user profile in the sessionAttributes
         
-        // handlerInput is passed by reference so any modification we make in 
-        // our interceptor will be present in our intent handler's canHandle and
-        // handle function
-        const updatedIntent = handlerInput.requestEnvelope.request.intent;
+        const updatedIntent = handlerInput.requestEnvelope.request.intent; // capture the changes done to the user profile by defining an updatedIntent variable
 
-        updatedIntent.slots.name.value = profile.name || undefined;
-        updatedIntent.slots.diet.value = profile.diet || undefined;
-        updatedIntent.slots.allergies.value = profile.allergies || undefined;
+        updatedIntent.slots.name.value = profile.name || undefined; // name of the user set to undefined until info is given by user
+        updatedIntent.slots.diet.value = profile.diet || undefined; // name of the user's dietary preferences set to undefined until info is given by user
+        updatedIntent.slots.allergies.value = profile.allergies || undefined; // name of the user allergies set to undefined until info is given by user
 
-        updatedIntent.slots.timeOfDay.value = sessionAttributes.timeOfDay || undefined;
+        updatedIntent.slots.timeOfDay.value = sessionAttributes.timeOfDay || undefined; // time of day undefined until date function is triggered
 
-        console.log(JSON.stringify(updatedIntent));
+        console.log(JSON.stringify(updatedIntent)); // logging where the program is at
       }
   }
 };
 
-// This interceptor looks at the slots belonging to the request.
-// If allergies or diet have been provided, it will store them in the user 
-// profile stored in the session attributes. When the skill closes, this 
-// information will be saved.
-const RecommendationIntentCaptureSlotToProfileInterceptor = {
+const RecommendationIntentCaptureSlotToProfileInterceptor = { // takes fulfilled allergy and diet slots and moves it to the user profile
   process(handlerInput) {
     const intentName = "RecommendationIntent";
     const slots = [ "allergies", "diet"];
-    console.log('recommendationIntentCaptureSlotToProfileInterceptor');
-    saveNewlyFilledSlotsToSessionAttributes(handlerInput, intentName, slots, (sessionAttributes, slotName, newlyFilledSlot) => {
-      sessionAttributes.profile[slotName] = newlyFilledSlot.synonym;
+    console.log('recommendationIntentCaptureSlotToProfileInterceptor'); // logging what function is being executed
+    saveNewlyFilledSlotsToSessionAttributes(handlerInput, intentName, slots, (sessionAttributes, slotName, newlyFilledSlot) => { // saveNewlyFilledSlotsToSessionAttributes is introduced here but called in other interceptors later. Makes sense as we need to save these slots to the profile however how does this interact with the persistence adaptors? 
+      sessionAttributes.profile[slotName] = newlyFilledSlot.synonym; // still not sure what .synonym does. Does it create an empty array so that synonyms can be added later? Or is it only used if a synonym has been used instead of the 'official slot name'? 
     });
   }
 };
 
-// This interceptor looks at the slots belonging to the request.
-// If zip, city or state have been provided, it will store them in the user 
-// location attributes. When the skill closes, this information will be saved.
-const CaptureAddressIntentCaptureSlotsToProfileInterceptor = {
+const CaptureAddressIntentCaptureSlotsToProfileInterceptor = { // how does this address interceptor relate to other address functions above? 
   process(handlerInput) {
-    const intentName = "CaptureAddressIntent";
-    const slots = ["zip", "city", "state"];
-    console.log('CaptureAddressIntentCaptureSlotsToProfileInterceptor call saveNewlyFilledSlotsToSessionAttributes');
-    saveNewlyFilledSlotsToSessionAttributes(handlerInput, intentName, slots, (sessionAttributes, slotName, newlyFilledSlot) => {
-      sessionAttributes.profile.location.address[slotName] = newlyFilledSlot.synonym;
+    const intentName = "CaptureAddressIntent"; 
+    const slots = ["zip", "city", "state"]; // the slots required to fulfill this intent
+    console.log('CaptureAddressIntentCaptureSlotsToProfileInterceptor call saveNewlyFilledSlotsToSessionAttributes'); // logging where the program is as well as the attributes
+    saveNewlyFilledSlotsToSessionAttributes(handlerInput, intentName, slots, (sessionAttributes, slotName, newlyFilledSlot) => { // saves all this info to the sessionAttributes
+      sessionAttributes.profile.location.address[slotName] = newlyFilledSlot.synonym; // this interceptor only gets used during a session where the location data is newly provided
     });
   }
 };
 
-
-// given an intent name and a set of slots, saveNewlyFilledSlotsToSessionAttributes 
-// will save newly filled values of the given slots into the session attributes.
-// The callback allows you to set the slot value into session attributes however
-// you want.
-function saveNewlyFilledSlotsToSessionAttributes(handlerInput, intentName, slots, callback) {
-  const attributesManager = handlerInput.attributesManager;
+function saveNewlyFilledSlotsToSessionAttributes(handlerInput, intentName, slots, callback) { // the interceptor actually writes the address data into the profile as opposed to eliciting the information
+  const attributesManager = handlerInput.attributesManager; 
   const sessionAttributes = attributesManager.getSessionAttributes();
   const currentIntent = handlerInput.requestEnvelope.request.intent;
 
   if (handlerInput.requestEnvelope.request.type === "IntentRequest"
-    && currentIntent.name === intentName) {
+    && currentIntent.name === intentName) { // seems a bit generic, shouldn't it be addressIntent or some specified name? --> no. This allows this code to be re-usable in different intents.
     
     const previousIntent = sessionAttributes[currentIntent.name];
     console.log('CALL intentHasNewlyFilledSlots IN saveNewlyFilledSlotsToSessionAttributes ');
     const newlyFilledSlots = intentHasNewlyFilledSlots(previousIntent, currentIntent, slots);
     console.log('saveNewlyFilledSlotsToSessionAttributes');
 
-    // We only save if the slot(s) has been filled with something new.
-    if (newlyFilledSlots.found) {
-      for (let slotName in newlyFilledSlots.slots) {
-        console.log('inserting:', 
-        slotName, JSON.stringify(newlyFilledSlots.slots[slotName]), 
-        JSON.stringify(sessionAttributes));
-        callback(sessionAttributes, slotName, newlyFilledSlots.slots[slotName]);
+    if (newlyFilledSlots.found) { // if there are new slots then this happens, otherwise the code block doesn't run
+      for (let slotName in newlyFilledSlots.slots) { // let is required here as the slotName might be changed here. Also it iterates for as long as there are new slots to be filled. 
+        console.log('inserting:', // logging
+        slotName, JSON.stringify(newlyFilledSlots.slots[slotName]), // logging
+        JSON.stringify(sessionAttributes)); // logging
+        callback(sessionAttributes, slotName, newlyFilledSlots.slots[slotName]); // not sure what we use this callback for
       }
-      attributesManager.setSessionAttributes(sessionAttributes);
+      attributesManager.setSessionAttributes(sessionAttributes); // takes the attributes from the current session and sets them as sessionAttributes so they can be queried next time
     }
   }  
 }
 
-// This interceptor handles intent switching during dialog management by
-// syncing the previously collected slots stored in the session attributes
-// with the current intent. The slots currently collected take precedence so
-// the user is able to overidde previously collected slots.
-const DialogManagementStateInterceptor = {
+const DialogManagementStateInterceptor = { // This interceptor handles intent switching during dialog management by syncing the previously collected slots stored in the session attributes with the current intent. This allows the user to interrupt doing one thing, for example giving their address, then mentioning something else and later picking back up again at providing missing address info
   process(handlerInput) {
     const currentIntent = handlerInput.requestEnvelope.request.intent;
 
-    if (handlerInput.requestEnvelope.request.type === "IntentRequest"
+    if (handlerInput.requestEnvelope.request.type === "IntentRequest" // generic intent name so that dialog management can be used accross all applicable intents
       && handlerInput.requestEnvelope.request.dialogState !== "COMPLETED") {
 
       const attributesManager = handlerInput.attributesManager;
       const sessionAttributes = attributesManager.getSessionAttributes();
 
-      // If there are no session attributes we've never entered dialog management
-      // for this intent before.
-      if (sessionAttributes[currentIntent.name]) {
-        let currentIntentSlots = sessionAttributes[currentIntent.name].slots;
-        for (let key in currentIntentSlots) {
+      if (sessionAttributes[currentIntent.name]) { // if there is a name for the currentIntent in the sessionAttributes then do this: 
+        let currentIntentSlots = sessionAttributes[currentIntent.name].slots; // currentIntentSlots can be overwritten and are found in the sessionAttributes
+        for (let key in currentIntentSlots) { // not sure what this key does
 
-          // we let the current intent's values override the session attributes
-          // that way the user can override previously given values.
-          // this includes anything we have previously stored in their profile.
-          if (currentIntentSlots[key].value && !currentIntent.slots[key].value) {
-            currentIntent.slots[key] = currentIntentSlots[key];
+          if (currentIntentSlots[key].value && !currentIntent.slots[key].value) { // don't know what this does exactly
+            currentIntent.slots[key] = currentIntentSlots[key]; // don't know what this does exactly
           }
         }    
       }
 
-      sessionAttributes[currentIntent.name] = currentIntent;
-      attributesManager.setSessionAttributes(sessionAttributes);
+      sessionAttributes[currentIntent.name] = currentIntent; // by capturing the name of the currentIntent and saving the sessionAttributes Alexa can move to another Intent and then later pick up, where she left off
+      attributesManager.setSessionAttributes(sessionAttributes); // captures the data in the sessionAttributes
     }
   }
 };
 
 /* Response INTERCEPTORS */
 
-// This Response interceptor detects if the skill is going to exit and saves the
-// session attributes into the persistent store.
-const SessionWillEndInterceptor = {
+const SessionWillEndInterceptor = { // This Response interceptor detects if the skill is going to exit and saves the session attributes into the persistent store.
   async process(handlerInput, responseOutput) {
 
+    // not sure what these two commented out lines are supposed to mean: 
     // let shouldEndSession = responseOutput.shouldEndSession;
     // shouldEndSession = (typeof shouldEndSession == "undefined" ? true : shouldEndSession);
     const requestType = handlerInput.requestEnvelope.request.type;
 
-    const ses = (typeof responseOutput.shouldEndSession == "undefined" ? true : responseOutput.shouldEndSession);
+    const ses = (typeof responseOutput.shouldEndSession == "undefined" ? true : responseOutput.shouldEndSession); // ses stands for shouldEndSession
 
-    console.log('responseOutput:', JSON.stringify(responseOutput));
+    console.log('responseOutput:', JSON.stringify(responseOutput)); // logging where we are
 
-    if(ses && !responseOutput.directives || requestType === 'SessionEndedRequest') {
+    if(ses && !responseOutput.directives || requestType === 'SessionEndedRequest') { // 
 
     // if(shouldEndSession || requestType == 'SessionEndedRequest') {
       console.log('SessionWillEndInterceptor', 'end!');
@@ -581,23 +555,23 @@ const SessionWillEndInterceptor = {
       const sessionAttributes = attributesManager.getSessionAttributes();
       const persistentAttributes = await attributesManager.getPersistentAttributes();
       
-      persistentAttributes.profile = sessionAttributes.profile;
-      persistentAttributes.recommendations = sessionAttributes.recommendations;
-      persistentAttributes.recommendations.current.meals = [];
+      persistentAttributes.profile = sessionAttributes.profile; // captures the full profile as opposed to the single entries captured above by the request interceptors
+      persistentAttributes.recommendations = sessionAttributes.recommendations; // adds today's recommendations to previous recommendations 
+      persistentAttributes.recommendations.current.meals = []; // captures the result of the interaction (recommendation)
 
       console.log(JSON.stringify(sessionAttributes));
 
-      attributesManager.setPersistentAttributes(persistentAttributes);
-      attributesManager.savePersistentAttributes(persistentAttributes);
+      attributesManager.setPersistentAttributes(persistentAttributes); // this sets the information about the session ending as a bunch of persistent attributes
+      attributesManager.savePersistentAttributes(persistentAttributes); // this saves the information about the session ending as a bunch of persistent attributes
     }
   }
 };
 
 /* CONSTANTS */
 
-const permissions = ['read::alexa:device:all:address'];
+const permissions = ['read::alexa:device:all:address']; // required in both launch requests and HasConsentTokenRequestInterceptor. In other words, everywhere where account linking is used.
 
-const requiredSlots = {
+const requiredSlots = { // defines whether the slots are required to fulfill the intent or not. Not sure why this needs to be hard-coded here, as it's already defined in the console. 
   allergies: true,
   meal: true,
   cuisine: true,
@@ -608,7 +582,7 @@ const requiredSlots = {
 
 /* HELPER FUNCTIONS */
 
-function initializeProfile() {
+function initializeProfile() { // this tells us exactly what needs to be part of the profile
   return {
     name: "",
     allergies: "",
@@ -624,7 +598,7 @@ function initializeProfile() {
   };
 }
 
-function initializeRecommendations() {
+function initializeRecommendations() { // this tells us that the recommendation will mention what was recommended last time but also what meals and restaurants were suggested today
   return {
     previous: {
         meal: "",
@@ -637,19 +611,19 @@ function initializeRecommendations() {
   };
 }
 
-// gets the welcome message based upon the context of the skill.
-function getWelcomeMessage(sessionAttributes) {
+
+function getWelcomeMessage(sessionAttributes) { // gets the welcome message based upon the context of the skill. 
 
   let speechText = "";
 
-  if (sessionAttributes.isNew) {
+  if (sessionAttributes.isNew) { // welcomeMessage for first time users
     speechText += "<say-as interpret-as=\"interjection\">Howdy!</say-as> ";
     speechText += "Welcome to The Foodie! ";
     speechText += "I'll help you find the right food right now. ";
     speechText += "To make that easier, you can give me permission to access your location, ";
     speechText += "just check the Alexa app. ";
   } else {
-    speechText += "Welcome back!! ";
+    speechText += "Welcome back!! "; // welcomeMessage for repeat users
 
     const timeOfDay = sessionAttributes.timeOfDay;
     if (timeOfDay) {
@@ -667,18 +641,18 @@ function getWelcomeMessage(sessionAttributes) {
   return speechText;
 }
 
-function getTimeOfDayMessage(timeOfDay) {
+function getTimeOfDayMessage(timeOfDay) { // tailors the message to the time of day if time of day was established
   const messages = timeOfDayMessages[timeOfDay];
   return randomPhrase(messages);
   
 }
 
-function randomPhrase(phraseList) {
+function randomPhrase(phraseList) { // gives us options from an array of phrases
   let i = Math.floor(Math.random() * phraseList.length);
   return(phraseList[i]);
 }
 
-const timeOfDayMessages = {
+const timeOfDayMessages = { // welcome message is tailored to time of day
   breakfast: [
     "It looks like it's breakfast. ",
     "<say-as interpret-as=\"interjection\">cock a doodle doo</say-as> It's time for breakfast. ", 
@@ -703,26 +677,23 @@ const timeOfDayMessages = {
   ]
 };
 
-// gets the prompt based upon the context of the skill.
 function getPrompt(sessionAttributes) {
 
-  let speechText =  "How rude of me. I forgot to ask. What's your name?";
-  if (!sessionAttributes.isNew) {
-    speechText = "Let's narrow it down. What flavors do you feel like? You can say things like spicy, savory, greasy, and fresh.";
+  let speechText =  "How rude of me. I forgot to ask. What's your name?"; 
+  if (!sessionAttributes.isNew) { // first time users are asked for their name, repeat users not
+    speechText = "Let's narrow it down. What flavors do you feel like? You can say things like spicy, savory, greasy, and fresh."; // asks for flavors
   }
 
   return speechText;
 }
 
-// given the slots object from the JSON Request to the skill, builds a simplified
-// object which simplifies inpecting slots for entity resultion matches.
-function getSlotValues(slots) {
+function getSlotValues(slots) { // part of all intents and interceptors where slot info needs to be provided
 
   const slotValues = {};
 
   for (let key in slots) {
 
-      if (slots.hasOwnProperty(key)) {
+      if (slots.hasOwnProperty(key)) { // not sure what this means
 
           slotValues[key] = {
               synonym: slots[key].value || null ,
@@ -764,14 +735,13 @@ function getSlotValues(slots) {
   return slotValues;
 }
 
-function getNewSlots(previous, current) {
+function getNewSlots(previous, current) { // if no old slots are found this kicks in
   const previousSlotValues = getSlotValues(previous);
   const currentSlotValues = getSlotValues(current);
 
   let newlyCollectedSlots = {};
-  for(let slotName in previousSlotValues) {
-      // resolvedValues and statusCode are dependent on our synonym so we only
-      // need to check if there's a difference of synonyms.
+  for(let slotName in previousSlotValues) { // loops through all the newly provided slots until they've all been captured
+
       if (previousSlotValues[slotName].synonym !== currentSlotValues[slotName].synonym){
           newlyCollectedSlots[slotName] = currentSlotValues[slotName];
       }
@@ -779,33 +749,21 @@ function getNewSlots(previous, current) {
   return newlyCollectedSlots;
 }
 
-// intentHasNewlyFilledSlots given a previous and current intent and a set of 
-// slots, this function will compare the previous intent's slots with current 
-// intent's slots to determine what's new. The results are filtered by the 
-// provided array of "slots". For example if you wanted to determine if there's
-// a new value for the "state" and "city" slot you would pass the previous and
-// current intent and an array containing both strings. If previous is undefined,
-// all filled slots are treated as newly filled. 
-// Returns: 
-// {
-//   found: (true | false)
-//   slots: object of slots returned from getSlots
-// }
-function intentHasNewlyFilledSlots(previous, intent, slots) {
+
+function intentHasNewlyFilledSlots(previous, intent, slots) { // once it has been established that new slots were provided this kicks in, though not sure exactly what this does
 
   let newSlots;
-  // if we don't have a previous intent then all non-empty intent's slots are 
-  // newly filled!
-  if (!previous) {
+
+  if (!previous) { // if there are no previous slots then this happens
     const slotValues = getSlotValues(intent.slots);
     newSlots = {};
     for (let slotName in slotValues) {
       if (slotValues[slotName].synonym) {
-        newSlots[slotName] = slotValues[slotName];
+        newSlots[slotName] = slotValues[slotName]; // new slots are set equal to slot values
       }
     }
   } else {
-    newSlots = getNewSlots(previous.slots, intent.slots);
+    newSlots = getNewSlots(previous.slots, intent.slots); // not sure why this is included. If it's not new what is it doing in this helper function? 
   }
 
   const results = {
@@ -813,7 +771,7 @@ function intentHasNewlyFilledSlots(previous, intent, slots) {
     slots: {}
   };
   
-  slots.forEach(slot => {
+  slots.forEach(slot => { // loops through each slot and if there's anything new it captures the result of those new slots
     if(newSlots[slot]) {
       results.slots[slot] = newSlots[slot];
       results.found = true;
@@ -822,7 +780,7 @@ function intentHasNewlyFilledSlots(previous, intent, slots) {
   return results;
 }
 
-function buildDisambiguationPrompt(resolvedValues) {
+function buildDisambiguationPrompt(resolvedValues) { // if not all required slots have been filled this creates the speech output 
   let output = "Which would you like";
   resolvedValues.forEach((resolvedValue, index) => {
      output +=  `${(index === resolvedValues.length - 1) ? ' or ' : ' '}${resolvedValue.value}`; 
@@ -831,7 +789,7 @@ function buildDisambiguationPrompt(resolvedValues) {
   return output;
 }
 
-function disambiguateSlot(slots) {
+function disambiguateSlot(slots) { // determines which the missing slots are 
   let result;
   for(let slotName in slots) {
       if (slots[slotName].resolvedValues.length > 1 && requiredSlots[slotName]) {
@@ -846,11 +804,7 @@ function disambiguateSlot(slots) {
   return result;
 }
 
-// given an intent and an array slots, intentSlotsHaveBeenFilled will determine
-// if all of the slots in the array have been filled.
-// Returns:
-// (true | false)
-function intentSlotsHaveBeenFilled(intent, slots){
+function intentSlotsHaveBeenFilled(intent, slots){ // have all the slots been filled in a given intent's array? Returns true or false. 
   const slotValues = getSlotValues(intent.slots);
   console.log('slot values:', JSON.stringify(slotValues));
   let result = true;
@@ -864,7 +818,7 @@ function intentSlotsHaveBeenFilled(intent, slots){
   return result;
 }
 
-function intentSlotsNeedDisambiguation(intent, slots) {
+function intentSlotsNeedDisambiguation(intent, slots) { // tells us which slots have been filled
   const slotValues = getSlotValues(intent.slots);
   let result = false;
   slots.forEach(slot => {
@@ -877,13 +831,13 @@ function intentSlotsNeedDisambiguation(intent, slots) {
   return result;
 }
 
-function getCurrentTime(location) {
+function getCurrentTime(location) { // gets the time at the user's location using the MomentsJS module
 
-  const currentTime = Moment.utc().tz(location);
+  const currentTime = Moment.utc().tz(location); // utc and tz define the time zones
   return currentTime;
 }
 
-function getTimeOfDay(currentTime) {
+function getTimeOfDay(currentTime) { // determines based on the device location time if it's time for breakfast or dinner or something else
   const currentHour = currentTime.hours();
   const currentMinutes = currentTime.minutes();
   
@@ -902,33 +856,33 @@ function getTimeOfDay(currentTime) {
   return timeOfDay;
 }
 
-const skillBuilder = Alexa.SkillBuilders.standard();
+const skillBuilder = Alexa.SkillBuilders.standard(); // will define the features that the skill has in the handlers and interceptors listed below
 
 exports.handler = skillBuilder
   .addRequestHandlers(
-    LaunchRequestWithConsentTokenHandler,
-    LaunchRequestHandler,
-    SuggestMealRecommendationIntentHandler,
+    LaunchRequestWithConsentTokenHandler, // starts up the skill for users who have already linked their accounts
+    LaunchRequestHandler, // starts up the skill for unlinked accounts
+    SuggestMealRecommendationIntentHandler, // suggests meal options depending on the info received
     // promptForDeliveryOption,
-    SIPRecommendationIntentHandler,    
-    CRecommendationIntentHandler,
-    LookupRestaurantIntentHandler,
+    SIPRecommendationIntentHandler, // provides a reprompt if not all mandatory slots have been filled   
+    CRecommendationIntentHandler, //
+    LookupRestaurantIntentHandler, // looks up restaurants tailored to the user's stated preferences
     // GetMealIntentHandler,
-    InProgressHasZipCaptureAddressIntentHandler,
-    InProgressHasCityStateCaptureAddressIntentHandler,
-    InProgressCaptureAddressIntentHandler,
-    HelpIntentHandler,
-    CancelAndStopIntentHandler,
-    SessionEndedRequestHandler
+    InProgressHasZipCaptureAddressIntentHandler, // attempts to capture zip
+    InProgressHasCityStateCaptureAddressIntentHandler, // attempts to capture city & state
+    InProgressCaptureAddressIntentHandler, // captures the whole address
+    HelpIntentHandler, // gives guidance if the user asks for help
+    CancelAndStopIntentHandler, // shuts down the skill
+    SessionEndedRequestHandler // finishes up everything, a bit like cleaning and then locking a store
   )
   .addRequestInterceptors( // request interceptors need to be registered just like handlers as well
     NewSessionRequestInterceptor, // determines if the user has a profile or not
     SetTimeOfDayInterceptor, // determines the time of day based on device location
     HasConsentTokenRequestInterceptor, // determines whether the user has given permission to link account and provide device location
-    RecommendationIntentStartedRequestInterceptor, // 
-    RecommendationIntentCaptureSlotToProfileInterceptor,
-    CaptureAddressIntentCaptureSlotsToProfileInterceptor,
-    DialogManagementStateInterceptor
+    RecommendationIntentStartedRequestInterceptor, // starts the user profile
+    RecommendationIntentCaptureSlotToProfileInterceptor, // transfers recommendations to profile
+    CaptureAddressIntentCaptureSlotsToProfileInterceptor, // transfers address to profile
+    DialogManagementStateInterceptor // transfers sessionAttributes from currentIntent to persistentAttributes
   )
   .addResponseInterceptors(SessionWillEndInterceptor) // make sure to not confuse request and response interceptors
   .addErrorHandlers(ErrorHandler) // not sure why the error handler is not just registered above with all the other handlers
@@ -938,17 +892,49 @@ exports.handler = skillBuilder
   .withTableName("theFoodie") // name of DynamodB table
   .lambda(); // uses the AWS lambda service
 
-// continue on line 438
 
   //   Questions: 
-//   What is in the request envelope? Contains the incoming Request and other context.
-//   What does the SIPRecommendationIntentHandler do exactly?   
-//   what is currentIntent is needed for?
+
+
+//   defines whether the slots are required to fulfill the intent or not. Not sure why this needs to be hard-coded here, as it's already defined in the console. 
 //   not sure why the object called responseBuilder is set equal to the handler output 
-//   no idea what a disambiguateSlot is. Based on the function below it indicates perhaps when slots are not filled yet?
 //   .addElicitSlotDirective("deliveryOption") // not sure why it doesn't include all the slots that are being elicited but only the deliveryOption
 //   What's the difference between an error message and an error stack? 
 //   What is the difference between a response and a request interceptor? 
+//   What does the process keyword/method do? 
+//   How does the saveNewlyFilledSlotsToSessionAttributes interceptor interact with other aspects of persistence? 
+//   if (currentIntentSlots[key].value && !currentIntent.slots[key].value) { // don't know what this does exactly
+//   currentIntent.slots[key] = currentIntentSlots[key]; // don't know what this does exactly
+//   getSlotValues is a function I don't understand at all how it works. I see the lines but I dont' understand what it means. 
+
+
+
+//   Learnings: 
+//   What is in the request envelope? Contains the incoming Request and other context.
+//   What does the SIPRecommendationIntentHandler do exactly? It figures out if all the required slots are filled thanks to the disambiguate helper functions.   
+//   it's super obvious but if I want to know exactly what aspects are in the sessionAttributes or in the requestEnvelope or wherever I can just log those things
+//   seems a bit generic, shouldn't it be addressIntent or some specified name? --> no. This allows this code to be re-usable in different intents.
+//   what is currentIntent is needed for? When we're collecting slots the program needs to know where we are. In case there is an interruption slots from the currentIntent get transferred to the profile where they can later by found again. 
+//   Is interceptor just a fancy name for helper function? No, there are a bunch of helper functions which mainly initialize stuff or provide messages. Interceptors are more complex and cover quite a bit of logic. Helper functions are used within interceptors. 
+//   How are interceptors related to each other? They can be linked but don't have to be, as they are perfectly capable of standing alone. Linked interceptors might perform sequential tasks whereas some interceptors share an activity such as initializing a process. 
+//   how does this address interceptor relate to other address functions above? My guess is that the handlers just query address details whereas the interceptors actually add them to the profile. 
+//   What is disambiguation? I think it means that not all slots have been filled and some kind of reprompt is necessary to fill all required slots. 
+//   not sure what the difference is between the getNewSlots function and the gotSlotsValues function --> 
+        // intentHasNewlyFilledSlots given a previous and current intent and a set of 
+        // slots, this function will compare the previous intent's slots with current 
+        // intent's slots to determine what's new. The results are filtered by the 
+        // provided array of "slots". For example if you wanted to determine if there's
+        // a new value for the "state" and "city" slot you would pass the previous and
+        // current intent and an array containing both strings. If previous is undefined,
+        // all filled slots are treated as newly filled. 
+        // Returns: 
+        // {
+        //   found: (true | false)
+        //   slots: object of slots returned from getSlots
+        // }
+
+
+
 
 
 
