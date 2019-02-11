@@ -1,0 +1,594 @@
+{
+    "version": "1.0",
+    "session": {
+        "new": true,
+        "sessionId": "amzn1.echo-api.session.123456789012",
+        "application": {
+            "applicationId": "amzn1.ask.skill.987654321"
+        },
+        "user": {
+            "userId": "amzn1.ask.account.testUser"
+        },
+        "attributes": {}
+    },
+    "context": {
+        "AudioPlayer": {
+            "playerActivity": "IDLE"
+        },
+        "System": {
+            "application": {
+                "applicationId": "amzn1.ask.skill.987654321"
+            },
+            "user": {
+                "userId": "amzn1.ask.account.testUser"
+            },
+            "device": {
+                "supportedInterfaces": {
+                    "AudioPlayer": {}
+                }
+            }
+        }
+    },
+    "request": {
+        "type": "LaunchRequest",
+        "requestId": "amzn1.echo-api.request.1234",
+        "timestamp": "2016-10-27T18:21:44Z",
+        "locale": "en-US"
+    }
+}
+
+2019-02-11T20:59:51.203Z	c0fad688-80f1-412e-b5f6-f7b2b3bb8ff0	RESPONSE =
+{
+    "outputSpeech": {
+        "type": "SSML",
+        "ssml": "<speak>Welcome to the Reminders API Demo Skill!  You can say \"create a reminder\" to create a reminder.  What would you like to do?</speak>"
+    },
+    "reprompt": {
+        "outputSpeech": {
+            "type": "SSML",
+            "ssml": "<speak>What would you like to do?</speak>"
+        }
+    },
+    "shouldEndSession": false
+}
+
+{
+    "version": "1.0",
+    "session": {
+        "new": true,
+        "sessionId": "amzn1.echo-api.session.760ebf4e-cf33-4221-b90e-b359325e5eec",
+        "application": {
+            "applicationId": "amzn1.ask.skill.e0a9"
+        },
+        "user": {
+            "userId": "amzn1.ask.account.AGCH"
+        }
+    },
+    "context": {
+        "System": {
+            "application": {
+                "applicationId": "amzn1.ask.skill.e0a"
+            },
+            "user": {
+                "userId": "amzn1.ask.account.AGCHJWXZ"
+            },
+            "device": {
+                "deviceId": "amzn1.ask.device.AE",
+                "supportedInterfaces": {}
+            },
+            "apiEndpoint": "https://api.amazonalexa.com",
+            "apiAccessToken": "eyJ0eXAiOiJKV1QiLCJhb"
+        }
+    },
+    "request": {
+        "type": "LaunchRequest",
+        "requestId": "amzn1.echo-api.request.610b7411-48fa-46aa-acdf-f1390013f39e",
+        "timestamp": "2019-02-11T21:03:09Z",
+        "locale": "en-US",
+        "shouldLinkResultBeReturned": false
+    }
+}
+
+error message: UserAuthenticationException. Request is not authorized/authenticated e.g. If customer does not have permission to create a reminder.
+error stack: ServiceError: UserAuthenticationException. Request is not authorized/authenticated e.g. If customer does not have permission to create a reminder.
+at ReminderManagementServiceClient.<anonymous> (/var/task/node_modules/ask-sdk-model/index.js:148:35)
+at step (/var/task/node_modules/ask-sdk-model/index.js:42:23)
+at Object.next (/var/task/node_modules/ask-sdk-model/index.js:23:53)
+at fulfilled (/var/task/node_modules/ask-sdk-model/index.js:14:58)
+at <anonymous>
+at process._tickDomainCallback (internal/process/next_tick.js:228:7)
+error status code: 401
+error response: [object Object]
+No reminders permissions (yet). Skipping reporting on reminder count.
+RESPONSE =
+{
+    "outputSpeech": {
+        "type": "SSML",
+        "ssml": "<speak>Welcome to the Reminders API Demo Skill!  You can say \"create a reminder\" to create a reminder.  What would you like to do?</speak>"
+    },
+    "reprompt": {
+        "outputSpeech": {
+            "type": "SSML",
+            "ssml": "<speak>What would you like to do?</speak>"
+        }
+    },
+    "shouldEndSession": false
+}
+
+{
+    "version": "1.0",
+    "session": {
+        "new": false,
+        "sessionId": "amzn1.echo-api.session.760ebf4e-cf33-4221-b90e-b359325e5eec",
+        "application": {
+            "applicationId": "amzn1.ask.skill.e0a
+        },
+        "user": {
+            "userId": "amzn1.ask.account.AGC"
+        }
+    },
+    "context": {
+        "System": {
+            "application": {
+                "applicationId": "amzn1.ask.skill.e0a"
+            },
+            "user": {
+                "userId": "amzn1.ask.account.AGCH"
+            },
+            "device": {
+                "deviceId": "amzn1.ask.device.AE5",
+                "supportedInterfaces": {}
+            },
+            "apiEndpoint": "https://api.amazonalexa.com",
+            "apiAccessToken": "eyJ0"
+        }
+    },
+    "request": {
+        "type": "IntentRequest",
+        "requestId": "amzn1.echo-api.request.2aeba4e1-2cf1-469e-bf78-349abf284f2d",
+        "timestamp": "2019-02-11T21:03:20Z",
+        "locale": "en-US",
+        "intent": {
+            "name": "CreateReminderIntent",
+            "confirmationStatus": "NONE"
+        },
+        "dialogState": "STARTED"
+    }
+}
+
+delegate back to Alexa to get confirmation
+RESPONSE =
+{
+    "directives": [
+        {
+            "type": "Dialog.Delegate"
+        }
+    ]
+}
+
+{
+    "version": "1.0",
+    "session": {
+        "new": false,
+        "sessionId": "amzn1.echo-api.session.760ebf4e-cf33-4221-b90e-b359325e5eec",
+        "application": {
+            "applicationId": "amzn1.ask.skill.e0a
+        },
+        "user": {
+            "userId": "amzn1.ask.account.AGCHJ"
+        }
+    },
+    "context": {
+        "System": {
+            "application": {
+                "applicationId": "amzn1.ask.skill.e0a908"
+            },
+            "user": {
+                "userId": "amzn1.ask.account.AG"
+            },
+            "device": {
+                "deviceId": "amzn1.ask.device.AE5ZCR7J7C",
+                "supportedInterfaces": {}
+            },
+            "apiEndpoint": "https://api.amazonalexa.com",
+            "apiAccessToken": "eZC2t9lp3dw"
+        }
+    },
+    "request": {
+        "type": "IntentRequest",
+        "requestId": "amzn1.echo-api.request.3f582ef9-bc48-4d6e-bd5e-64fe2efb6bcc",
+        "timestamp": "2019-02-11T21:03:26Z",
+        "locale": "en-US",
+        "intent": {
+            "name": "CreateReminderIntent",
+            "confirmationStatus": "CONFIRMED"
+        },
+        "dialogState": "IN_PROGRESS"
+    }
+}
+
+{
+    "version": "1.0",
+    "session": {
+        "new": false,
+        "sessionId": "amzn1.echo-api.session.760ebf4e-cf33-4221-b90e-b359325e5eec",
+        "application": {
+            "applicationId": "amzn1.ask.skill.e0a
+        },
+        "user": {
+            "userId": "amzn1.ask.account.AG"
+        }
+    },
+    "context": {
+        "System": {
+            "application": {
+                "applicationId": "amzn1.ask.skill.e0a
+            },
+            "user": {
+                "userId": "amzn1.ask.account.AG"
+            },
+            "device": {
+                "deviceId": "amzn1.ask.device.AE5ZCR7J7C",
+                "supportedInterfaces": {}
+            },
+            "apiEndpoint": "https://api.amazonalexa.com",
+            "apiAccessToken": "eyJ01NiIsImtpZCI6IjEifQ.eyJhdWQiOiJodHRwczovL2Fwa"
+        }
+    },
+    "request": {
+        "type": "SessionEndedRequest",
+        "requestId": "amzn1.echo-api.request.fc9d161b-b5fb-49e1-b8b3-79fdfd6f2f42",
+        "timestamp": "2019-02-11T21:03:26Z",
+        "locale": "en-US",
+        "reason": "ERROR",
+        "error": {
+            "type": "INVALID_RESPONSE",
+            "message": "In order to be requested, alexa::alerts:reminders:skill:readwrite must be declared as permission used by the skill. for requestId amzn1.echo-api.request.3f582ef9-bc48-4d6e-bd5e-64fe2efb6bcc"
+        }
+    }
+}
+
+2019-02-11T21:03:26.699Z	322e251b-e475-4ef9-b73f-962ed2b76931	Session ended with reason: ERROR
+2019-02-11T21:03:26.699Z	322e251b-e475-4ef9-b73f-962ed2b76931	RESPONSE =
+{}
+
+END RequestId: 322e251b-e475-4ef9-b73f-962ed2b76931
+REPORT RequestId: 322e251b-e475-4ef9-b73f-962ed2b76931	Duration: 0.98 ms	Billed Duration: 100 ms Memory Size: 128 MB	Max Memory Used: 26 MB	
+START RequestId: 8b599c01-699c-40aa-be46-a5f187e1a656 Version: $LATEST
+2019-02-11T21:09:49.260Z	8b599c01-699c-40aa-be46-a5f187e1a656	REQUEST ENVELOPE =
+{
+    "version": "1.0",
+    "session": {
+        "new": true,
+        "sessionId": "amzn1.echo-api.session.2f85cc99-67a8-404a-a26c-7e840cc39230",
+        "application": {
+            "applicationId": "amzn1.ask.skill.e0a
+        },
+        "user": {
+            "userId": "amzn1.ask.account.AG"
+        }
+    },
+    "context": {
+        "System": {
+            "application": {
+                "applicationId": "amzn1.ask.skill.e0a
+            },
+            "user": {
+                "userId": "amzn1.ask.account.AG"
+            },
+            "device": {
+                "deviceId": "amzn1.ask.device.AE5ZCR7J7C",
+                "supportedInterfaces": {}
+            },
+            "apiEndpoint": "https://api.amazonalexa.com",
+            "apiAccessToken": "eyJ0g"
+        }
+    },
+    "request": {
+        "type": "LaunchRequest",
+        "requestId": "amzn1.echo-api.request.e3077468-0451-47a0-b721-5ee5f2aee427",
+        "timestamp": "2019-02-11T21:09:49Z",
+        "locale": "en-US",
+        "shouldLinkResultBeReturned": false
+    }
+}
+
+2019-02-11T21:09:49.430Z	8b599c01-699c-40aa-be46-a5f187e1a656	error message: UserAuthenticationException. Request is not authorized/authenticated e.g. If customer does not have permission to create a reminder.
+2019-02-11T21:09:49.430Z	8b599c01-699c-40aa-be46-a5f187e1a656	error stack: ServiceError: UserAuthenticationException. Request is not authorized/authenticated e.g. If customer does not have permission to create a reminder.
+at ReminderManagementServiceClient.<anonymous> (/var/task/node_modules/ask-sdk-model/index.js:148:35)
+at step (/var/task/node_modules/ask-sdk-model/index.js:42:23)
+at Object.next (/var/task/node_modules/ask-sdk-model/index.js:23:53)
+at fulfilled (/var/task/node_modules/ask-sdk-model/index.js:14:58)
+at <anonymous>
+at process._tickDomainCallback (internal/process/next_tick.js:228:7)
+2019-02-11T21:09:49.430Z	8b599c01-699c-40aa-be46-a5f187e1a656	error status code: 401
+2019-02-11T21:09:49.430Z	8b599c01-699c-40aa-be46-a5f187e1a656	error response: [object Object]
+2019-02-11T21:09:49.430Z	8b599c01-699c-40aa-be46-a5f187e1a656	No reminders permissions (yet). Skipping reporting on reminder count.
+2019-02-11T21:09:49.431Z	8b599c01-699c-40aa-be46-a5f187e1a656	RESPONSE =
+{
+    "outputSpeech": {
+        "type": "SSML",
+        "ssml": "<speak>Welcome to the Reminders API Demo Skill!  You can say \"create a reminder\" to create a reminder.  What would you like to do?</speak>"
+    },
+    "reprompt": {
+        "outputSpeech": {
+            "type": "SSML",
+            "ssml": "<speak>What would you like to do?</speak>"
+        }
+    },
+    "shouldEndSession": false
+}
+
+END RequestId: 8b599c01-699c-40aa-be46-a5f187e1a656
+REPORT RequestId: 8b599c01-699c-40aa-be46-a5f187e1a656	Duration: 174.76 ms	Billed Duration: 200 ms Memory Size: 128 MB	Max Memory Used: 26 MB	
+START RequestId: e4d7f7ac-1a9f-4649-a9d5-7284bc6e33f7 Version: $LATEST
+2019-02-11T21:09:59.261Z	e4d7f7ac-1a9f-4649-a9d5-7284bc6e33f7	REQUEST ENVELOPE =
+{
+    "version": "1.0",
+    "session": {
+        "new": false,
+        "sessionId": "amzn1.echo-api.session.2f85cc99-67a8-404a-a26c-7e840cc39230",
+        "application": {
+            "applicationId": "amzn1.ask.skill.e0a
+        },
+        "user": {
+            "userId": "amzn1.ask.account.AG"
+        }
+    },
+    "context": {
+        "System": {
+            "application": {
+                "applicationId": "amzn1.ask.skill.e0a
+            },
+            "user": {
+                "userId": "amzn1.ask.account.AG"
+            },
+            "device": {
+                "deviceId": "amzn1.ask.device.AE5ZCR7J7C",
+                "supportedInterfaces": {}
+            },
+            "apiEndpoint": "https://api.amazonalexa.com",
+            "apiAccessToken": "el"
+        }
+    },
+    "request": {
+        "type": "IntentRequest",
+        "requestId": "amzn1.echo-api.request.ef5",
+        "timestamp": "2019-02-11T21:09:59Z",
+        "locale": "en-US",
+        "intent": {
+            "name": "CreateReminderIntent",
+            "confirmationStatus": "NONE"
+        },
+        "dialogState": "STARTED"
+    }
+}
+
+2019-02-11T21:09:59.261Z	e4d7f7ac-1a9f-4649-a9d5-7284bc6e33f7	delegate back to Alexa to get confirmation
+2019-02-11T21:09:59.261Z	e4d7f7ac-1a9f-4649-a9d5-7284bc6e33f7	RESPONSE =
+{
+    "directives": [
+        {
+            "type": "Dialog.Delegate"
+        }
+    ]
+}
+
+END RequestId: e4d7f7ac-1a9f-4649-a9d5-7284bc6e33f7
+REPORT RequestId: e4d7f7ac-1a9f-4649-a9d5-7284bc6e33f7	Duration: 0.79 ms	Billed Duration: 100 ms Memory Size: 128 MB	Max Memory Used: 26 MB	
+START RequestId: 20aaa415-8a2f-4f63-9ec5-c6d67f79b71b Version: $LATEST
+2019-02-11T21:10:04.574Z	20aaa415-8a2f-4f63-9ec5-c6d67f79b71b	REQUEST ENVELOPE =
+{
+    "version": "1.0",
+    "session": {
+        "new": false,
+        "sessionId": "amzn1.echo-api.session.2f85cc99-67a8-404a-a26c-7e840cc39230",
+        "application": {
+            "applicationId": "amzn1.ask.skill.e0a
+        },
+        "user": {
+            "userId": "amzn1.ask.account.AG"
+        }
+    },
+    "context": {
+        "System": {
+            "application": {
+                "applicationId": "amzn1.ask.skill.e0a
+            },
+            "user": {
+                "userId": "amzn1.ask.account.AG"
+            },
+            "device": {
+                "deviceId": "amzn1.ask.device.AE5ZCR7J7C",
+                "supportedInterfaces": {}
+            },
+            "apiEndpoint": "https://api.amazonalexa.com",
+            "apiAccessToken": "eyJ01NiIsImtp"
+        }
+    },
+    "request": {
+        "type": "IntentRequest",
+        "requestId": "amzn1.echo-api.request.5c20c440-b482-41e0-a8f9-899c7ea45620",
+        "timestamp": "2019-02-11T21:10:04Z",
+        "locale": "en-US",
+        "intent": {
+            "name": "CreateReminderIntent",
+            "confirmationStatus": "CONFIRMED"
+        },
+        "dialogState": "IN_PROGRESS"
+    }
+}
+
+2019-02-11T21:10:04.574Z	20aaa415-8a2f-4f63-9ec5-c6d67f79b71b	Alexa confirmed intent, so clear to create reminder
+2019-02-11T21:10:04.654Z	20aaa415-8a2f-4f63-9ec5-c6d67f79b71b	ERROR MESSAGE: Unknown error
+END RequestId: 20aaa415-8a2f-4f63-9ec5-c6d67f79b71b
+REPORT RequestId: 20aaa415-8a2f-4f63-9ec5-c6d67f79b71b	Duration: 86.58 ms	Billed Duration: 100 ms Memory Size: 128 MB	Max Memory Used: 26 MB	
+START RequestId: 19784169-6355-47e3-a29d-642efdaec728 Version: $LATEST
+2019-02-11T21:11:56.420Z	19784169-6355-47e3-a29d-642efdaec728	REQUEST ENVELOPE =
+{
+    "version": "1.0",
+    "session": {
+        "new": true,
+        "sessionId": "amzn1.echo-api.session.23092560-1ca2-4b2c-b421-28fdaf54187c",
+        "application": {
+            "applicationId": "amzn1.ask.skill.e0a
+        },
+        "user": {
+            "userId": "amzn1.ask.account.AG"
+        }
+    },
+    "context": {
+        "System": {
+            "application": {
+                "applicationId": "amzn1.ask.skill.e0a
+            },
+            "user": {
+                "userId": "amzn1.ask.account.AG"
+            },
+            "device": {
+                "deviceId": "amzn1.ask.device.AE5ZCR7J7C",
+                "supportedInterfaces": {}
+            },
+            "apiEndpoint": "https://api.amazonalexa.com",
+            "apiAccessToken": "eyJ"
+        }
+    },
+    "request": {
+        "type": "LaunchRequest",
+        "requestId": "amzn1.echo-api.request.1b267464-1d26-4d28-a494-7a519f67d742",
+        "timestamp": "2019-02-11T21:11:56Z",
+        "locale": "en-US",
+        "shouldLinkResultBeReturned": false
+    }
+}
+
+2019-02-11T21:11:56.561Z	19784169-6355-47e3-a29d-642efdaec728	error message: UserAuthenticationException. Request is not authorized/authenticated e.g. If customer does not have permission to create a reminder.
+2019-02-11T21:11:56.561Z	19784169-6355-47e3-a29d-642efdaec728	error stack: ServiceError: UserAuthenticationException. Request is not authorized/authenticated e.g. If customer does not have permission to create a reminder.
+at ReminderManagementServiceClient.<anonymous> (/var/task/node_modules/ask-sdk-model/index.js:148:35)
+at step (/var/task/node_modules/ask-sdk-model/index.js:42:23)
+at Object.next (/var/task/node_modules/ask-sdk-model/index.js:23:53)
+at fulfilled (/var/task/node_modules/ask-sdk-model/index.js:14:58)
+at <anonymous>
+at process._tickDomainCallback (internal/process/next_tick.js:228:7)
+2019-02-11T21:11:56.561Z	19784169-6355-47e3-a29d-642efdaec728	error status code: 401
+2019-02-11T21:11:56.561Z	19784169-6355-47e3-a29d-642efdaec728	error response: [object Object]
+2019-02-11T21:11:56.561Z	19784169-6355-47e3-a29d-642efdaec728	No reminders permissions (yet). Skipping reporting on reminder count.
+2019-02-11T21:11:56.561Z	19784169-6355-47e3-a29d-642efdaec728	RESPONSE =
+{
+    "outputSpeech": {
+        "type": "SSML",
+        "ssml": "<speak>Welcome to the Reminders API Demo Skill!  You can say \"create a reminder\" to create a reminder.  What would you like to do?</speak>"
+    },
+    "reprompt": {
+        "outputSpeech": {
+            "type": "SSML",
+            "ssml": "<speak>What would you like to do?</speak>"
+        }
+    },
+    "shouldEndSession": false
+}
+
+END RequestId: 19784169-6355-47e3-a29d-642efdaec728
+REPORT RequestId: 19784169-6355-47e3-a29d-642efdaec728	Duration: 144.93 ms	Billed Duration: 200 ms Memory Size: 128 MB	Max Memory Used: 26 MB	
+START RequestId: 76726954-5945-4828-bf04-900249c5a6bd Version: $LATEST
+2019-02-11T21:12:06.553Z	76726954-5945-4828-bf04-900249c5a6bd	REQUEST ENVELOPE =
+{
+    "version": "1.0",
+    "session": {
+        "new": false,
+        "sessionId": "amzn1.echo-api.session.23092560-1ca2-4b2c-b421-28fdaf54187c",
+        "application": {
+            "applicationId": "amzn1.ask.skill.e0a
+        },
+        "user": {
+            "userId": "amzn1.ask.account.AG"
+        }
+    },
+    "context": {
+        "System": {
+            "application": {
+                "applicationId": "amzn1.ask.skill.e0a
+            },
+            "user": {
+                "userId": "amzn1.ask.account.AG"
+            },
+            "device": {
+                "deviceId": "amzn1.ask.device.AE5ZCR7J7C",
+                "supportedInterfaces": {}
+            },
+            "apiEndpoint": "https://api.amazonalexa.com",
+            "apiAccessToken": "eyJ01"
+        }
+    },
+    "request": {
+        "type": "IntentRequest",
+        "requestId": "amzn1.echo-api.request.c9c03ee4-afbf-4eae-bb6b-0fddf5929fe4",
+        "timestamp": "2019-02-11T21:12:06Z",
+        "locale": "en-US",
+        "intent": {
+            "name": "CreateReminderIntent",
+            "confirmationStatus": "NONE"
+        },
+        "dialogState": "STARTED"
+    }
+}
+
+2019-02-11T21:12:06.553Z	76726954-5945-4828-bf04-900249c5a6bd	delegate back to Alexa to get confirmation
+2019-02-11T21:12:06.553Z	76726954-5945-4828-bf04-900249c5a6bd	RESPONSE =
+{
+    "directives": [
+        {
+            "type": "Dialog.Delegate"
+        }
+    ]
+}
+
+END RequestId: 76726954-5945-4828-bf04-900249c5a6bd
+REPORT RequestId: 76726954-5945-4828-bf04-900249c5a6bd	Duration: 0.73 ms	Billed Duration: 100 ms Memory Size: 128 MB	Max Memory Used: 26 MB	
+START RequestId: 127b9ba4-87f8-43d9-bcbb-3e8d059ba1ac Version: $LATEST
+2019-02-11T21:12:12.122Z	127b9ba4-87f8-43d9-bcbb-3e8d059ba1ac	REQUEST ENVELOPE =
+{
+    "version": "1.0",
+    "session": {
+        "new": false,
+        "sessionId": "amzn1.echo-api.session.23092560-1ca2-4b2c-b421-28fdaf54187c",
+        "application": {
+            "applicationId": "amzn1.ask.skill.e0a
+        },
+        "user": {
+            "userId": "amzn1.ask.account.AG"
+        }
+    },
+    "context": {
+        "System": {
+            "application": {
+                "applicationId": "amzn1.ask.skill.e0a
+            },
+            "user": {
+                "userId": "amzn1.ask.account.AG"
+            },
+            "device": {
+                "deviceId": "amzn1.ask.device.AE5ZCR7J7C",
+                "supportedInterfaces": {}
+            },
+            "apiEndpoint": "https://api.amazonalexa.com",
+            "apiAccessToken": "eyJ01NiIsIm"
+        }
+    },
+    "request": {
+        "type": "IntentRequest",
+        "requestId": "amzn1.echo-api.request.e57627e4-fb14-4ec9-ae9c-821727b69849",
+        "timestamp": "2019-02-11T21:12:12Z",
+        "locale": "en-US",
+        "intent": {
+            "name": "CreateReminderIntent",
+            "confirmationStatus": "CONFIRMED"
+        },
+        "dialogState": "IN_PROGRESS"
+    }
+}
+
+2019-02-11T21:12:12.122Z	127b9ba4-87f8-43d9-bcbb-3e8d059ba1ac	Alexa confirmed intent, so clear to create reminder
+2019-02-11T21:12:12.193Z	127b9ba4-87f8-43d9-bcbb-3e8d059ba1ac	ERROR MESSAGE: Unknown error
+END RequestId: 127b9ba4-87f8-43d9-bcbb-3e8d059ba1ac
+REPORT RequestId: 127b9ba4-87f8-43d9-bcbb-3e8d059ba1ac	Duration: 71.59 ms	Billed Duration: 100 ms Memory Size: 128 MB	Max Memory Used: 26 MB	
